@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import random
 import datetime
+import sqlite3 # <-- THIS IS THE REAL DATABASE ENGINE
 
 app = FastAPI()
 
@@ -15,7 +16,42 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 40 Stations
+# --- DATABASE SETUP (Runs automatically) ---
+def init_db():
+    conn = sqlite3.connect("voltgrid.db")
+    cursor = conn.cursor()
+    # Create the SQL Table if it doesn't exist yet
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS bookings (
+            id TEXT PRIMARY KEY,
+            user_name TEXT,
+            vehicle_type TEXT,
+            vehicle_number TEXT,
+            station_name TEXT,
+            date TEXT,
+            time TEXT,
+            payment_method TEXT,
+            amount TEXT,
+            payment_status TEXT,
+            charging_status TEXT,
+            verification_status TEXT,
+            booking_timestamp REAL
+        )
+    ''')
+    conn.commit()
+    conn.close()
+
+init_db() # Call the setup function
+
+# Helper to convert SQL rows back into JSON/Dictionaries for React
+def dict_factory(cursor, row):
+    d = {}
+    for idx, col in enumerate(cursor.description):
+        d[col[0]] = row[idx]
+    return d
+# ------------------------------------------
+
+# 40 Stations (Kept hardcoded for speed)
 stations_db = [
     # CHENNAI
     {"id": 1, "name": "T Nagar Hub", "city": "Chennai", "state": "Tamil Nadu", "speed": "150kW", "slots": 4, "lat": 13.0418, "lng": 80.2341},
@@ -64,15 +100,18 @@ stations_db = [
     {"id": 40, "name": "Aerocity Premium", "city": "Delhi", "state": "Delhi", "speed": "250kW", "slots": 8, "lat": 28.5492, "lng": 77.1213},
 ]
 
-bookings_db = []
-
 class BookingRequest(BaseModel):
     station_id: int
     user_name: str
+    vehicle_type: str
     vehicle_number: str
     date: str
     time: str
     payment_method: str
+
+class StaffUpdate(BaseModel):
+    charging_status: str
+    payment_status: str
 
 @app.get("/api/stations")
 def get_stations():
@@ -85,20 +124,35 @@ def book_slot(booking: BookingRequest):
             if station["slots"] > 0:
                 station["slots"] -= 1 
                 receipt_id = f"VG-{random.randint(100000, 999999)}"
+                timestamp = datetime.datetime.now().timestamp()
+                payment_status = "Paid (UPI)" if booking.payment_method == "UPI" else "Pending (Cash)"
                 
+                # WRITE TO REAL SQL DATABASE
+                conn = sqlite3.connect("voltgrid.db")
+                cursor = conn.cursor()
+                cursor.execute('''
+                    INSERT INTO bookings (id, user_name, vehicle_type, vehicle_number, station_name, date, time, payment_method, amount, payment_status, charging_status, verification_status, booking_timestamp)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ''', (receipt_id, booking.user_name, booking.vehicle_type, booking.vehicle_number, station["name"], booking.date, booking.time, booking.payment_method, "₹450", payment_status, "Arriving...", "Active in Bay", timestamp))
+                
+                conn.commit()
+                conn.close()
+                
+                # Format response for React
                 new_booking = {
                     "id": receipt_id,
                     "user_name": booking.user_name,
+                    "vehicle_type": booking.vehicle_type,
                     "vehicle_number": booking.vehicle_number,
                     "station_name": station["name"],
                     "date": booking.date,
                     "time": booking.time,
                     "payment_method": booking.payment_method,
                     "amount": "₹450",
-                    "payment_status": "Paid" if booking.payment_method == "UPI" else "Pending (Cash)",
-                    "booking_timestamp": datetime.datetime.now().timestamp()
+                    "payment_status": payment_status,
+                    "charging_status": "Arriving...",
+                    "verification_status": "Active in Bay",
                 }
-                bookings_db.append(new_booking)
                 return {"message": "Success", "receipt_id": receipt_id, "booking_details": new_booking}
             else:
                 raise HTTPException(status_code=400, detail="No slots available.")
@@ -106,22 +160,40 @@ def book_slot(booking: BookingRequest):
 
 @app.get("/api/admin/bookings")
 def get_all_bookings():
-    current_time = datetime.datetime.now().timestamp()
+    # READ FROM REAL SQL DATABASE
+    conn = sqlite3.connect("voltgrid.db")
+    conn.row_factory = dict_factory
+    cursor = conn.cursor()
     
-    # AUTOMATIC STATUS ALGORITHM
-    for b in bookings_db:
-        time_elapsed = current_time - b["booking_timestamp"]
-        
-        # Determine Charging Status based on time
-        if time_elapsed < 15:
-            b["charging_status"] = "Arriving..."
-        elif time_elapsed < 45:
-            b["charging_status"] = "⚡ Charging"
-        else:
-            b["charging_status"] = "✅ Completed"
-            
-            # If it was a cash payment, automatically mark it as Paid once charging completes
-            if b["payment_method"] == "Cash" and b["payment_status"] != "Paid":
-                b["payment_status"] = "Paid (Collected)"
-                
-    return bookings_db
+    # Sort by timestamp so the newest are at the bottom
+    cursor.execute("SELECT * FROM bookings ORDER BY booking_timestamp ASC")
+    bookings = cursor.fetchall()
+    
+    conn.close()
+    return bookings
+
+@app.put("/api/staff/update/{booking_id}")
+def update_booking_status(booking_id: str, update: StaffUpdate):
+    # UPDATE REAL SQL DATABASE
+    conn = sqlite3.connect("voltgrid.db")
+    cursor = conn.cursor()
+    
+    cursor.execute("UPDATE bookings SET charging_status = ?, payment_status = ? WHERE id = ?", 
+                  (update.charging_status, update.payment_status, booking_id))
+    
+    conn.commit()
+    conn.close()
+    return {"message": "Statuses Updated Successfully"}
+
+@app.put("/api/staff/dispatch/{booking_id}")
+def dispatch_vehicle(booking_id: str):
+    # UPDATE REAL SQL DATABASE
+    conn = sqlite3.connect("voltgrid.db")
+    cursor = conn.cursor()
+    
+    cursor.execute("UPDATE bookings SET verification_status = ? WHERE id = ?", 
+                  ("Verified & Dispatched 🟢", booking_id))
+    
+    conn.commit()
+    conn.close()
+    return {"message": "Vehicle Dispatched"}
