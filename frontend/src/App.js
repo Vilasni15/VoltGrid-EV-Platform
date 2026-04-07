@@ -42,8 +42,8 @@ function App() {
   const [paymentMethod, setPaymentMethod] = useState('');
   const [adminBookings, setAdminBookings] = useState([]);
 
-  const fetchStations = () => fetch('http://localhost:8000/api/stations').then(res => res.json()).then(setStations);
-  const fetchAdminBookings = () => fetch('http://localhost:8000/api/admin/bookings').then(res => res.json()).then(setAdminBookings);
+  const fetchStations = () => fetch('https://voltgrid-api.onrender.com/api/stations').then(res => res.json()).then(setStations);
+  const fetchAdminBookings = () => fetch('https://voltgrid-api.onrender.com/api/admin/bookings').then(res => res.json()).then(setAdminBookings);
 
   useEffect(() => {
     if (currentView === 'app') fetchStations();
@@ -68,7 +68,7 @@ function App() {
   };
 
   const updateStaffStatus = async (bookingId, newCharge, newPayment) => {
-    await fetch(`http://localhost:8000/api/staff/update/${bookingId}`, {
+    await fetch(`https://voltgrid-api.onrender.com/api/staff/update/${bookingId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ charging_status: newCharge, payment_status: newPayment })
@@ -77,7 +77,7 @@ function App() {
   };
 
   const handleDispatch = async (bookingId) => {
-    await fetch(`http://localhost:8000/api/staff/dispatch/${bookingId}`, { method: 'PUT' });
+    await fetch(`https://voltgrid-api.onrender.com/api/staff/dispatch/${bookingId}`, { method: 'PUT' });
     fetchAdminBookings();
   };
 
@@ -94,7 +94,7 @@ function App() {
 
   const processPayment = async () => {
     const combinedTime = `${bookingDetails.timeHour}:${bookingDetails.timeMinute}`;
-    const response = await fetch('http://localhost:8000/api/book', {
+    const response = await fetch('https://voltgrid-api.onrender.com/api/book', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
