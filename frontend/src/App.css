@@ -36,3 +36,28 @@
     transform: rotate(360deg);
   }
 }
+/* BASE STYLES */
+body { background: #0f172a; color: white; font-family: 'Inter', sans-serif; margin: 0; }
+nav { display: flex; justify-content: space-between; padding: 20px; background: #1e293b; align-items: center; }
+.primary-btn { background: #38bdf8; color: #0f172a; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+
+/* LOGIN & CARDS */
+.login-container { display: flex; justify-content: center; align-items: center; height: 100vh; padding: 20px; }
+.login-card, .booking-form, .receipt-card { background: #1e293b; padding: 30px; border-radius: 16px; width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+input, select { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box; }
+
+/* MOBILE RESPONSIVENESS FIX [cite: 57, 60] */
+@media (max-width: 768px) {
+  nav h1 { font-size: 1.2rem; }
+  .station-list { padding: 15px; }
+  .station-card { margin-bottom: 15px; }
+  .table-container { overflow-x: auto; } /* Allows horizontal scroll for staff table on tiny phones */
+  table { font-size: 14px; }
+  .login-card { padding: 20px; }
+}
+
+/* BADGES */
+.badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+.Arriving { background: #eab308; color: black; }
+.Charging { background: #3b82f6; }
+.Completed { background: #22c55e; }
