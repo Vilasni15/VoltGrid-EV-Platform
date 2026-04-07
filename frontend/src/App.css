@@ -1,63 +1,167 @@
-.App {
-  text-align: center;
+/* --- UNIVERSAL STYLES --- */
+:root {
+  --primary: #38bdf8;
+  --bg-dark: #0f172a;
+  --card-bg: #1e293b;
+  --text-main: #f8fafc;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+body {
+  margin: 0;
+  font-family: 'Inter', -apple-system, sans-serif;
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  -webkit-font-smoothing: antialiased;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+/* --- NAVIGATION --- */
+nav {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
+  padding: 1rem 2rem;
+  background: var(--card-bg);
+  border-bottom: 1px solid #334155;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+nav h1 {
+  font-size: 1.5rem;
+  letter-spacing: 2px;
+  color: var(--primary);
+  margin: 0;
+}
+
+/* --- LOGIN SCREEN --- */
+.login-container {
+  display: flex;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
+  align-items: center;
+  min-height: 90vh;
+  padding: 20px;
+}
+
+.login-card {
+  background: var(--card-bg);
+  padding: 2.5rem;
+  border-radius: 1.5rem;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.role-selector {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 1.5rem;
+  background: var(--bg-dark);
+  padding: 5px;
+  border-radius: 12px;
+}
+
+.role-selector button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.role-selector button.active {
+  background: var(--primary);
+  color: var(--bg-dark);
+  font-weight: bold;
+}
+
+/* --- INPUTS & BUTTONS --- */
+input, select {
+  width: 100%;
+  padding: 14px;
+  margin: 10px 0;
+  border-radius: 10px;
+  border: 1px solid #334155;
+  background: var(--bg-dark);
   color: white;
+  font-size: 16px;
+  box-sizing: border-box;
 }
 
-.App-link {
-  color: #61dafb;
+.primary-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--primary);
+  color: var(--bg-dark);
+  border: none;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: transform 0.2s;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.primary-btn:active { transform: scale(0.98); }
+
+/* --- STATION LIST & CARDS --- */
+.station-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  padding: 2rem;
 }
-/* BASE STYLES */
-body { background: #0f172a; color: white; font-family: 'Inter', sans-serif; margin: 0; }
-nav { display: flex; justify-content: space-between; padding: 20px; background: #1e293b; align-items: center; }
-.primary-btn { background: #38bdf8; color: #0f172a; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
 
-/* LOGIN & CARDS */
-.login-container { display: flex; justify-content: center; align-items: center; height: 100vh; padding: 20px; }
-.login-card, .booking-form, .receipt-card { background: #1e293b; padding: 30px; border-radius: 16px; width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-input, select { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box; }
+.station-card {
+  background: var(--card-bg);
+  padding: 1.5rem;
+  border-radius: 1rem;
+  border: 1px solid #334155;
+  transition: 0.3s;
+}
 
-/* MOBILE RESPONSIVENESS FIX [cite: 57, 60] */
+.station-card:hover { border-color: var(--primary); }
+
+/* --- DASHBOARD TABLE --- */
+.table-container {
+  margin: 2rem;
+  background: var(--card-bg);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 16px;
+  text-align: left;
+  border-bottom: 1px solid #334155;
+}
+
+th { background: #1e293b; color: var(--primary); text-transform: uppercase; font-size: 12px; }
+
+/* --- STATUS BADGES --- */
+.badge {
+  padding: 4px 10px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.Arriving { background: #fef08a; color: #854d0e; }
+.Charging { background: #3b82f6; color: white; }
+.Completed { background: #22c55e; color: white; }
+
+/* --- MOBILE RESPONSIVENESS (THE FIX) --- */
 @media (max-width: 768px) {
-  nav h1 { font-size: 1.2rem; }
-  .station-list { padding: 15px; }
-  .station-card { margin-bottom: 15px; }
-  .table-container { overflow-x: auto; } /* Allows horizontal scroll for staff table on tiny phones */
-  table { font-size: 14px; }
-  .login-card { padding: 20px; }
+  nav { padding: 1rem; }
+  nav h1 { font-size: 1.1rem; }
+  .login-container { padding: 10px; }
+  .login-card { padding: 1.5rem; border-radius: 1rem; }
+  .station-list { grid-template-columns: 1fr; padding: 1rem; }
+  .table-container { margin: 10px; overflow-x: auto; }
+  th, td { padding: 12px; font-size: 13px; }
 }
-
-/* BADGES */
-.badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
-.Arriving { background: #eab308; color: black; }
-.Charging { background: #3b82f6; }
-.Completed { background: #22c55e; }

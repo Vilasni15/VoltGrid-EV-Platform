@@ -5,7 +5,7 @@ function App() {
   const [role, setRole] = useState('User');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [credentials, setCredentials] = useState({ username: '', password: '' });
-  const [view, setView] = useState('map');
+  const [view, setView] = useState('map'); 
   const [selectedStation, setSelectedStation] = useState(null);
   const [vehicleNumber, setVehicleNumber] = useState('');
   const [vehicleType, setVehicleType] = useState('Car');
@@ -67,7 +67,7 @@ function App() {
       setCurrentReceipt(data);
       setView('receipt');
     } catch (error) {
-      alert("Booking failed. Is the server awake?");
+      alert("Booking failed. Please try again.");
     }
   };
 
