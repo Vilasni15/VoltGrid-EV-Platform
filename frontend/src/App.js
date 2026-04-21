@@ -97,6 +97,7 @@ const [page,setPage]=useState("landing");
 const [role,setRole]=useState("User");
 const [authView, setAuthView] = useState("select"); 
 const [roleDropdownOpen, setRoleDropdownOpen] = useState(false);
+const [typeDropdownOpen, setTypeDropdownOpen] = useState(false); // NEW: For Booking Page
 
 const [username,setUsername]=useState("");
 const [email,setEmail]=useState("");
@@ -166,6 +167,10 @@ const signup=async()=>{
  });
 
  setMessage("Signup successful");
+ 
+ // 🔥 THE FIX: Tell the app that the newly signed up user is now the active loginUser
+ setLoginUser(username); 
+ 
  setPage("map");
 };
 
@@ -278,7 +283,7 @@ if(page==="auth"){
     <div className="auth-header">
       <h2>Welcome to VoltGrid</h2>
       
-      <div className="custom-dropdown-wrapper">
+      <div className="custom-dropdown-wrapper auth-role-dropdown">
         <div 
           className="premium-select custom-select-header" 
           onClick={() => setRoleDropdownOpen(!roleDropdownOpen)}
@@ -328,6 +333,22 @@ if(page==="auth"){
         </div>
       )}
 
+      {/* NEW: Forgot Password View */}
+      {authView === "forgot" && (
+        <div className="auth-card">
+          <h3>Reset Password</h3>
+          <p className="subtitle">Enter your email to receive a secure reset link.</p>
+          <input value={email} placeholder="Email Address" onChange={e=>setEmail(e.target.value)}/>
+          <button onClick={() => {
+            if(!email) return setMessage("Please enter your email.");
+            setMessage("Password reset link sent to " + email);
+            setAuthView("login");
+          }}>Send Reset Link</button>
+          <button className="btn-text" onClick={() => {setMessage(""); setAuthView("login")}}>Back to Login</button>
+          <p>{message}</p>
+        </div>
+      )}
+
       {((role !== "User") || (role === "User" && authView === "login")) && (
         <div className="auth-card">
           <h3>{role} Login</h3>
@@ -335,6 +356,9 @@ if(page==="auth"){
           <input type="password" value={loginPass} placeholder="Password" onChange={e=>setLoginPass(e.target.value)}/>
           <button onClick={login}>Log In</button>
           <p>{message}</p>
+          
+          <button className="btn-text forgot-btn" onClick={() => {setMessage(""); setAuthView("forgot")}}>Forgot Password?</button>
+
           {role === "User" && <button className="btn-text" onClick={() => setAuthView("select")}>Back to options</button>}
         </div>
       )}
@@ -426,11 +450,34 @@ if(page==="booking"){
       <h2>{place} Station</h2>
 
       <div className="booking-grid">
-        <select onChange={e=>setType(e.target.value)}>
-          <option>Car</option>
-          <option>Bike</option>
-          <option>Auto</option>
-        </select>
+        
+        {/* NEW: Custom Glass Dropdown for Booking (NO BLUE NATIVE HIGHLIGHT) */}
+        <div className="custom-dropdown-wrapper" style={{ zIndex: 105 }}>
+          <div 
+            className="input-style-dropdown" 
+            onClick={() => setTypeDropdownOpen(!typeDropdownOpen)}
+          >
+            {type}
+          </div>
+          
+          {typeDropdownOpen && (
+            <div className="custom-options-list glass-panel">
+              {["Car", "Bike", "Auto"].map((v) => (
+                <div 
+                  key={v} 
+                  className="custom-option"
+                  onClick={() => {
+                    setType(v);
+                    setTypeDropdownOpen(false);
+                  }}
+                >
+                  {v}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
         <input placeholder="Vehicle No." onChange={e=>setVehicle(e.target.value)}/>
         <input type="date" onChange={e=>setDate(e.target.value)}/>
         <input type="time" onChange={e=>setTime(e.target.value)}/>

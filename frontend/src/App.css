@@ -1,5 +1,5 @@
 /* ================================================================
-   VOLTGRID — OMNI-GLASS & PREMIUM UI EDITION v8.0
+   VOLTGRID — OMNI-GLASS & PREMIUM UI EDITION v9.0
    ================================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
@@ -143,15 +143,19 @@ input:focus, select:focus {
 }
 
 /* ================================================================
-   CUSTOM GLASS DROPDOWN 
+   CUSTOM GLASS DROPDOWN (KILLS OS BLUE HOVER)
    ================================================================ */
 .custom-dropdown-wrapper {
   position: relative;
   width: 100%;
+}
+
+.auth-role-dropdown {
   max-width: 300px;
   margin: 0 auto;
 }
 
+/* Auth Page specific styling */
 .custom-select-header {
   cursor: pointer;
   user-select: none;
@@ -167,6 +171,7 @@ input:focus, select:focus {
   color: var(--primary-dark);
   border-radius: 99px; 
   padding-right: 40px; 
+  min-height: 56px;
   transition: var(--transition-buttery);
 }
 .custom-select-header:hover {
@@ -174,6 +179,40 @@ input:focus, select:focus {
   box-shadow: 0 12px 40px rgba(34, 197, 94, 0.25);
 }
 .custom-select-header::after {
+  content: '';
+  position: absolute;
+  right: 20px;
+  width: 16px;
+  height: 16px;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23166534%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  pointer-events: none;
+}
+
+/* Booking Page specific styling to match other inputs perfectly */
+.input-style-dropdown {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.03);
+  border-radius: 16px;
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--primary-dark);
+  padding: 16px 20px;
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  cursor: pointer;
+  transition: var(--transition-buttery);
+}
+.input-style-dropdown:hover {
+  background: rgba(255, 255, 255, 0.95);
+}
+.input-style-dropdown::after {
   content: '';
   position: absolute;
   right: 20px;
@@ -249,6 +288,12 @@ button:hover {
 .btn-danger { background: rgba(254, 226, 226, 0.8); color: #dc2626; border: 1px solid #fca5a5; backdrop-filter: blur(8px); }
 .btn-danger:hover { background: #ef4444; color: #fff; box-shadow: 0 12px 24px rgba(239, 68, 68, 0.3); }
 
+.forgot-btn {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-top: -12px;
+}
+
 .btn-glow {
   background: linear-gradient(90deg, #22c55e, #4ade80, #22c55e);
   background-size: 200% auto;
@@ -259,7 +304,7 @@ button:hover {
 .btn-sm { min-height: 44px; padding: 10px 20px; font-size: 0.9rem; }
 
 /* ================================================================
-   PAGE: LANDING
+   PAGE: LANDING (Centered, No Image)
    ================================================================ */
 .landing {
   min-height: 100vh;
@@ -308,10 +353,10 @@ button:hover {
   padding: 40px 32px;
   display: flex; flex-direction: column; gap: 20px; 
 }
-.auth-card h3, .booking-card h2 { font-size: 1.6rem; font-weight: 800; text-align: center; color: var(--primary-dark); }
+.auth-card h3, .booking-card h2 { font-size: 1.6rem; font-weight: 800; text-align: center; color: var(--primary-dark); margin-bottom: -4px; }
 
 .text-center { text-align: center; }
-.subtitle { color: var(--text-muted); margin-bottom: 16px; font-weight: 500; }
+.subtitle { color: var(--text-muted); font-weight: 500; text-align: center; font-size: 0.95rem;}
 .auth-card p:not(:empty):not(.subtitle), .booking-card p:not(:empty) { text-align: center; color: var(--primary-dark); font-weight: 700; background: rgba(34, 197, 94, 0.15); padding: 14px; border-radius: 12px; border: 1px solid rgba(34, 197, 94, 0.3); }
 
 .booking-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
@@ -339,6 +384,7 @@ button:hover {
   text-align: center; padding: 40px 24px;
   animation: modalPop 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+.modal-icon { font-size: 3rem; margin-bottom: 16px; }
 .modal-content h3 { font-size: 1.8rem; font-weight: 800; color: var(--primary-dark); margin-bottom: 12px; }
 .modal-content p { font-size: 1.05rem; color: var(--text-main); font-weight: 500; margin-bottom: 12px; }
 .status-text { background: rgba(34, 197, 94, 0.15); padding: 12px; border-radius: 12px; border: 1px solid rgba(34,197,94,0.3); color: var(--primary-dark) !important; }
@@ -434,17 +480,14 @@ button:hover {
    MOBILE RESPONSIVENESS (Crucial for Deployment)
    ================================================================ */
 @media (max-width: 900px) {
-  /* Landing Adjustments */
   .glass-hero { padding: 40px 20px; width: 95%; }
   .landing-text h1 { font-size: 2.8rem; }
   
-  /* Auth / Booking Form Adjustments */
   .auth-card, .booking-card { padding: 32px 20px; }
   .booking-grid { grid-template-columns: 1fr; }
   .btn-row { grid-template-columns: 1fr; }
 
-  /* Map/Sidebar Splitting */
-  .layout { flex-direction: column-reverse; } /* Puts map on top, sidebar on bottom */
+  .layout { flex-direction: column-reverse; } 
   .map { height: 55vh; flex: none; }
   .sidebar { 
     width: 100%; 
@@ -454,10 +497,9 @@ button:hover {
     border-radius: 24px 24px 0 0; 
     padding: 24px 16px;
     box-shadow: 0 -8px 24px rgba(0,0,0,0.1);
-    z-index: 2000; /* Overlap map shadow slightly */
+    z-index: 2000; 
   }
 
-  /* Dashboard Adjustments */
   .dashboard { padding: 40px 16px; }
   .dashboard h2 { font-size: 2rem; }
   .dashboard-grid { grid-template-columns: 1fr; }
