@@ -12,8 +12,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
 });
 
-const API = "http://localhost:8000";
-
+const API = "https://voltgrid-server-final.onrender.com";
 const cities = {
   Chennai: [13.0827, 80.2707],
   Bangalore: [12.9716, 77.5946],
